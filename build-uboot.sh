@@ -4,7 +4,6 @@ mkdir -p output/
 
 docker run --rm -ti \
   -e "CROSS_COMPILE=aarch64-linux-gnu-" \
-  -u `id -u`:`id -g` \
   -v `pwd`/:/base \
      aarch64-builder \
         /bin/bash -e -c '\
