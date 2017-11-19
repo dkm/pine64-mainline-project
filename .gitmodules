@@ -10,6 +10,7 @@
 [submodule "components/linux"]
 	path = components/linux
 	url = https://github.com/CallMeFoxie/linux.git
+	shallow = true
 [submodule "components/sunxi-mali"]
 	path = components/sunxi-mali
 	url = https://github.com/Icenowy/sunxi-mali.git
