@@ -35,10 +35,13 @@ components/busybox/.config: config/busybox.config
 # Kernel
 components/linux/.config: config/kernel.config
 	cp $< $@
+
+components/linux/include/config/kernel.release: components/linux/.config
 	cd components/linux && make olddefconfig
 
-components/linux/arch/arm64/boot/Image: components/linux/.config
+components/linux/arch/arm64/boot/Image: components/linux/include/config/kernel.release
 	cd components/linux && make -j5 bindeb-pkg KBUILD_IMAGE=arch/arm64/boot/Image
+	mv components/linux-*`cat $<`* output/
 
 # Rootfs
 output/rootfs: output/pine64.img output/u-boot-sunxi-image.spl
@@ -61,6 +64,7 @@ output/rootfs: output/pine64.img output/u-boot-sunxi-image.spl
 	sudo umount $@/boot $@/
 	sudo losetup -d $(LOOPD)
 	dd conv=notrunc if=output/u-boot-sunxi-image.spl of=$< bs=8k seek=1
+	touch output/rootfs
 
 # Image
 output/pine64.img: config/partitions
