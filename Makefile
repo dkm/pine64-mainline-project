@@ -52,7 +52,9 @@ output/rootfs: output/pine64.img output/u-boot-sunxi-image.spl linux-image-pine6
 	sudo mkfs.ext2 $(LOOPD)p1
 	sudo mkfs.ext4 $(LOOPD)p2
 	sudo mount $(LOOPD)p2 $@
-	sudo qemu-debootstrap --arch=arm64 --merged-usr --variant=minbase stretch $@ "http://ftp.debian.org/debian" --include="iproute2,systemd-sysv,ntp,udev,vim,sudo,openssh-server,ifupdown,isc-dhcp-client,kmod,apt-transport-https,ca-certificates,usbutils" --exclude="sysv-rc,initscripts,startpar,lsb-base,insserv"
+	sudo qemu-debootstrap --arch=arm64 --merged-usr --variant=minbase stretch $@ "http://ftp.debian.org/debian" --include="iproute2,systemd-sysv,ntp,udev,vim,sudo,openssh-server,ifupdown,isc-dhcp-client,kmod,apt-transport-https,ca-certificates,locales,usbutils" --exclude="sysv-rc,initscripts,startpar,lsb-base,insserv"
+	echo "en_US.UTF-8 UTF-8" >> ${ROOT}/etc/locale.gen
+	sudo chroot $@ locale-gen
 	sudo mount $(LOOPD)p1 $@/boot
 	sudo cp -rvp overlay/* $@/
 	sudo rm $@/etc/machine-id
