@@ -43,8 +43,13 @@ components/linux/arch/arm64/boot/Image: components/linux/include/config/kernel.r
 	cd components/linux && make -j5 bindeb-pkg KBUILD_IMAGE=arch/arm64/boot/Image
 	mv components/linux-*`cat $<`* output/
 
+.PHONY: linux-image-pine64
+linux-image-pine64: components/linux/include/config/kernel.release components/linux/arch/arm64/boot/Image
+	cd linux-image-pine64 && ./update.sh `cat ../$<`
+	mv linux-image-pine64_* output/
+
 # Rootfs
-output/rootfs: output/pine64.img output/u-boot-sunxi-image.spl
+output/rootfs: output/pine64.img output/u-boot-sunxi-image.spl linux-image-pine64
 	mkdir -p output/rootfs
 	$(eval LOOPD := $(shell sudo losetup -f -P --show $<))
 	sudo mkfs.ext2 $(LOOPD)p1
@@ -60,6 +65,8 @@ output/rootfs: output/pine64.img output/u-boot-sunxi-image.spl
 	sudo chroot $@ useradd -s /bin/bash -m pine
 	sudo chroot $@ usermod -aG sudo pine
 	echo "pine:julien1234" | sudo chroot $@ /usr/sbin/chpasswd
+	sudo cp output/linux-image*.deb output/rootfs/tmp/
+	sudo chroot $@ sh -c 'dpkg -i /tmp/linux-image*.deb' 
 	sync
 	sudo umount $@/boot $@/
 	sudo losetup -d $(LOOPD)
