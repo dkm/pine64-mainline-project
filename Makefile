@@ -75,6 +75,7 @@ output/rootfs: output/pine64.img output/u-boot-sunxi-image.spl linux-image-pine6
 
 # Image
 output/pine64.img: config/partitions
+	mkdir output
 	dd if=/dev/zero of=$@ bs=1G count=4
 	/sbin/sfdisk $@ < config/partitions
 
