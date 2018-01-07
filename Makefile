@@ -1,10 +1,18 @@
 export CROSS_COMPILE	:= aarch64-linux-gnu-
 export ARCH		:= arm64
 
-TARGETS		:= output/rootfs output/busybox
+TARGETS		:= output/rootfs
 
 .PHONY: all
 all: $(TARGETS)
+
+.PHONY: clean
+clean:
+	rm -rf output
+	cd components/arm-trusted-firmware && make clean
+	cd components/u-boot && make mrproper
+	cd components/linux && make mrproper
+
 
 # ATF
 components/arm-trusted-firmware/build/sun50iw1p1/release/bl31.bin:
@@ -17,20 +25,8 @@ components/u-boot/spl/sunxi-spl.bin components/u-boot/u-boot.itb: components/arm
 output/u-boot-sunxi-image.spl: components/u-boot/spl/sunxi-spl.bin components/u-boot/u-boot.itb
 	cat components/u-boot/spl/sunxi-spl.bin components/u-boot/u-boot.itb > $@
 
-components/u-boot/.config: config/uboot.config
-	cp $< $@
-	cd components/u-boot && make olddefconfig
-
-# Busybox
-output/busybox: components/busybox/busybox
-	cp $< $@
-
-components/busybox/busybox: components/busybox/.config
-	cd components/busybox && make -j4
-
-components/busybox/.config: config/busybox.config
-	cp $< $@
-	cd components/busybox && yes "" | make oldconfig
+components/u-boot/.config:
+	cd components/u-boot && make pine64_plus_defconfig
 
 # Kernel
 components/linux/.config: config/kernel.config

@@ -1,6 +1,3 @@
-[submodule "components/busybox"]
-	path = components/busybox
-	url = git://git.busybox.net/busybox
 [submodule "components/arm-trusted-firmware"]
 	path = components/arm-trusted-firmware
 	url = https://github.com/apritzel/arm-trusted-firmware.git
