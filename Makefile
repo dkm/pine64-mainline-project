@@ -20,7 +20,7 @@ components/arm-trusted-firmware/build/sun50iw1p1/release/bl31.bin:
 
 # U-Boot
 components/u-boot/spl/sunxi-spl.bin components/u-boot/u-boot.itb: components/arm-trusted-firmware/build/sun50iw1p1/release/bl31.bin components/u-boot/.config
-	export BL31=components/arm-trusted-firmware/build/sun50iw1p1/release/bl31.bin && cd components/u-boot && make -j4
+	export BL31=$(PWD)/components/arm-trusted-firmware/build/sun50iw1p1/release/bl31.bin && cd components/u-boot && make -j4
 
 output/u-boot-sunxi-image.spl: components/u-boot/spl/sunxi-spl.bin components/u-boot/u-boot.itb
 	cat components/u-boot/spl/sunxi-spl.bin components/u-boot/u-boot.itb > $@
