@@ -51,13 +51,14 @@ output/rootfs: output/pine64.img output/u-boot-sunxi-image.spl linux-image-pine6
 	sudo mkfs.ext2 $(LOOPD)p1
 	sudo mkfs.ext4 $(LOOPD)p2
 	sudo mount $(LOOPD)p2 $@
-	sudo qemu-debootstrap --arch=arm64 --variant=minbase stretch $@ "http://ftp.debian.org/debian" --include="iproute2,systemd-sysv,ntp,udev,vim,sudo,openssh-server,ifupdown,isc-dhcp-client,kmod,apt-transport-https,ca-certificates"
+	sudo qemu-debootstrap --arch=arm64 --merged-usr --variant=minbase stretch $@ "http://ftp.debian.org/debian" --include="iproute2,systemd-sysv,ntp,udev,vim,sudo,openssh-server,ifupdown,isc-dhcp-client,kmod,apt-transport-https,ca-certificates,usbutils" --exclude="sysv-rc,initscripts,startpar,lsb-base,insserv"
 	sudo mount $(LOOPD)p1 $@/boot
 	sudo cp -rvp overlay/* $@/
 	sudo rm $@/etc/machine-id
 	sudo rm $@/etc/ssh/ssh_host_*
 	sudo mkdir -p $@/boot/extlinux
 	sudo chroot $@ apt-get update
+	sudo chroot $@ apt-get --assume-yes --no-install-recommends install dbus libpam-systemd
 	sudo chroot $@ useradd -s /bin/bash -m pine
 	sudo chroot $@ usermod -aG sudo pine
 	echo "pine:julien1234" | sudo chroot $@ /usr/sbin/chpasswd
@@ -71,7 +72,7 @@ output/rootfs: output/pine64.img output/u-boot-sunxi-image.spl linux-image-pine6
 
 # Image
 output/pine64.img: config/partitions
-	mkdir output
+	mkdir -p output
 	dd if=/dev/zero of=$@ bs=1G count=4
 	/sbin/sfdisk $@ < config/partitions
 
