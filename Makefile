@@ -25,8 +25,9 @@ components/u-boot/spl/sunxi-spl.bin components/u-boot/u-boot.itb: components/arm
 output/u-boot-sunxi-image.spl: components/u-boot/spl/sunxi-spl.bin components/u-boot/u-boot.itb
 	cat components/u-boot/spl/sunxi-spl.bin components/u-boot/u-boot.itb > $@
 
-components/u-boot/.config:
-	cd components/u-boot && make pine64_plus_defconfig
+components/u-boot/.config: config/u-boot.config
+	cp $< $@
+	cd components/u-boot && make olddefconfig
 
 # Kernel
 components/linux/.config: config/kernel.config
